@@ -11,14 +11,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 export function Navbar() {
   return (
-    <nav className="flex justify-between p-3 ">
-      <p className="text-2xl font-bold">Coding Playground</p>
-
-      <ModeToggle />
-    </nav>
+    <>
+      <nav className="flex justify-between p-3 ">
+        <Link href={"/"} className="text-2xl font-bold">
+          Coding Playground
+        </Link>
+        <ModeToggle />
+      </nav>
+      <hr />
+    </>
   );
 }
 
