@@ -10,6 +10,11 @@ import {
 import Editor from "@monaco-editor/react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
+import {
+  MonacoThemes,
+  defineTheme,
+  monacoThemes,
+} from "../_utils/editor-theme";
 
 export function CodeEditor() {
   const [value, setValue] = useState("# this is a test");
@@ -21,6 +26,13 @@ export function CodeEditor() {
     setValue(value || "");
   };
 
+  function handleThemeChange(theme: MonacoThemes) {
+    if (["light", "vs-dark"].includes(theme)) {
+      setTheme(theme);
+    } else {
+      defineTheme(theme).then((_) => setTheme(theme));
+    }
+  }
   return (
     <div className="w-[60%]">
       <div className="flex gap-3">
@@ -36,18 +48,18 @@ export function CodeEditor() {
             ))}
           </SelectContent>
         </Select>
-        {/* <Select onValueChange={(e) => setLanguage(e)}>
+        <Select onValueChange={handleThemeChange}>
           <SelectTrigger className="w-[180px] my-3">
             <SelectValue placeholder={"Select Theme"} />
           </SelectTrigger>
           <SelectContent>
-            {languages.map((language) => (
-              <SelectItem value={language.name} key={language.name}>
-                {language.name}
+            {Object.keys(monacoThemes).map((theme) => (
+              <SelectItem value={theme} key={theme}>
+                {monacoThemes[theme as MonacoThemes]}
               </SelectItem>
             ))}
           </SelectContent>
-        </Select> */}
+        </Select>
       </div>
       <Editor
         height="70vh"

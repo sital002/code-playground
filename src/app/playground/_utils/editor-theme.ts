@@ -1,6 +1,7 @@
 import { loader } from "@monaco-editor/react";
+// import themes from "monaco-themes/themes/themelist.json";
 
-const monacoThemes = {
+export const monacoThemes = {
   active4d: "Active4D",
   "all-hallows-eve": "All Hallows Eve",
   amy: "Amy",
@@ -51,7 +52,7 @@ const monacoThemes = {
   monoindustrial: "monoindustrial",
 };
 
-type MonacoThemes = keyof typeof monacoThemes;
+export type MonacoThemes = keyof typeof monacoThemes;
 
 const defineTheme = (theme: MonacoThemes) => {
   return new Promise((res) => {

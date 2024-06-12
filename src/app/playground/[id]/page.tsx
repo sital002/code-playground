@@ -14,7 +14,8 @@ export default function Playground({ params }: { params: { id: string } }) {
 function Output() {
   return (
     <div className="my-3 w-[40%] border border-primary rounded-lg p-3">
-      <p>Output</p>
+      <p className="py-3 font-bold">Output</p>
+      <hr />
     </div>
   );
 }
