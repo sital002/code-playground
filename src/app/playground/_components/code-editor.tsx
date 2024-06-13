@@ -97,7 +97,7 @@ export function CodeEditor() {
             ))}
           </SelectContent>
         </Select>
-        <Button className="px-9 font-bold " disabled title="Submit">
+        <Button className="px-9 font-bold " disabled title="Run Code">
           Run
         </Button>
       </div>
