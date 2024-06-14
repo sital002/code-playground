@@ -7,9 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Editor from "@monaco-editor/react";
 import { useParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   MonacoThemes,
   defineTheme,
@@ -18,9 +17,14 @@ import {
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 // import type * as monacoType from "monaco-editor";
+import Editor, { Monaco, OnMount } from "@monaco-editor/react";
+import { editor } from "monaco-editor";
 
 const defaultCode = "# this is a test";
 export function CodeEditor() {
+  const [monacoInstance, setMonacoInstance] =
+    useState<editor.IStandaloneCodeEditor | null>(null);
+
   const [value, setValue] = useState(
     localStorage.getItem("savedCode") || defaultCode
   );
@@ -32,10 +36,41 @@ export function CodeEditor() {
 
   const handleEditorChange = (value: string | undefined) => {
     setValue(value || "");
+    if (monacoInstance) {
+      const selection = monacoInstance.getSelection();
+      // const id = { major: 1, minor: 1 };
+      // const op = {
+      //   identifier: id,
+      //   range: {
+      //     startLineNumber: selection?.selectionStartLineNumber || 1,
+      //     startColumn: selection?.selectionStartColumn || 1,
+      //     endLineNumber: selection?.endLineNumber || 1,
+      //     endColumn: selection?.endColumn || 1,
+      //   },
+      //   text: "This is a tesxt",
+      //   forceMoveMarkers: true,
+      // };
+      // monacoInstance.executeEdits("my-source", [op]);
+    }
   };
   const [editorTheme, setEditorTheme] = useState(
     localStorage.getItem("editorTheme") ?? "vs-dark"
   );
+
+  const editorMount: OnMount = (editorL: editor.IStandaloneCodeEditor) => {
+    setMonacoInstance(editorL);
+  };
+
+  useEffect(() => {
+    if (monacoInstance) {
+      monacoInstance.focus();
+      // monacoInstance.getValue();
+      monacoInstance.onDidChangeCursorPosition((e) => {
+        console.log(e);
+      });
+    }
+  }, [monacoInstance]);
+
   function handleThemeChange(theme: string) {
     // setEditorTheme(theme);
     localStorage.setItem("editorTheme", theme);
@@ -45,6 +80,12 @@ export function CodeEditor() {
       defineTheme(theme).then((_) => setEditorTheme(theme));
     }
   }
+
+  const handleSaveCode = useCallback(() => {
+    localStorage.setItem("savedCode", value);
+    console.log("Code saved");
+    alert("Code saved");
+  }, [value]);
   useEffect(() => {
     const savedTheme = localStorage.getItem("editorTheme");
     if (currentTheme && savedTheme) {
@@ -60,15 +101,13 @@ export function CodeEditor() {
       // editorRef.current?.getAction("editor.action.formatDocument")?.run();
       if (e.ctrlKey && e.key === "s") {
         e.preventDefault();
-        localStorage.setItem("savedCode", value);
-        console.log("Code saved");
-        alert("Code saved");
+        handleSaveCode();
       }
     }
     document.addEventListener("keydown", handleKeyDown);
 
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [value]);
+  }, [handleSaveCode, value]);
 
   return (
     <div className="w-[60%]">
@@ -100,13 +139,36 @@ export function CodeEditor() {
         <Button className="px-9 font-bold " disabled title="Run Code">
           Run
         </Button>
+
+        <Button
+          className="px-9 font-bold "
+          onClick={handleSaveCode}
+          title="Save Code (CTRL + S)"
+        >
+          Save
+        </Button>
       </div>
       <Editor
-        height="70vh"
+        height="80vh"
         width={`100%`}
         language={language}
         value={value}
         theme={editorTheme}
+        onMount={editorMount}
+        options={{
+          minimap: { enabled: false },
+          fontSize: 18,
+          wordWrap: "on",
+          wrappingIndent: "indent",
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
+          lineNumbers: "on",
+          tabSize: 2,
+          padding: { top: 10, bottom: 10 },
+          "semanticHighlighting.enabled": true,
+          cursorBlinking: "smooth",
+          fontFamily: "JetBrains Mono",
+        }}
         onChange={handleEditorChange}
       />
     </div>
