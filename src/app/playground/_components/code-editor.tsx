@@ -19,9 +19,15 @@ import { Button } from "@/components/ui/button";
 // import type * as monacoType from "monaco-editor";
 import Editor, { Monaco, OnMount } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
+import { excuteCode } from "@/actions/playground/playground";
 
-const defaultCode = "# this is a test";
-export function CodeEditor() {
+const defaultCode = `console.log("Hello World! ");`;
+
+type CodeEditorProps = {
+  setOutput: (prev: string) => void;
+  outputRef: React.RefObject<HTMLDivElement>;
+};
+export function CodeEditor({ setOutput, outputRef }: CodeEditorProps) {
   const [monacoInstance, setMonacoInstance] =
     useState<editor.IStandaloneCodeEditor | null>(null);
 
@@ -57,6 +63,30 @@ export function CodeEditor() {
     localStorage.getItem("editorTheme") ?? "vs-dark"
   );
 
+  async function runCode() {
+    try {
+      if (language !== "javascript")
+        return alert("Only javascript is supported for now.");
+      const { result, error } = await excuteCode(value, language);
+      console.log(result);
+      if (error && outputRef.current) {
+        // const textWithBrs = error.replace(/\r?\n/g, "<br />");
+        // outputRef.current.innerHTML = textWithBrs;
+
+        setOutput(error);
+      }
+      if (result && outputRef.current) {
+        // const textWithBrs = result.replace(/\n/g, "<br>");
+
+        // outputRef.current.innerHTML = textWithBrs;
+        setOutput(result);
+      }
+    } catch (err) {
+      setOutput(JSON.stringify(err));
+      console.log(err);
+    }
+  }
+
   const editorMount: OnMount = (editorL: editor.IStandaloneCodeEditor) => {
     setMonacoInstance(editorL);
   };
@@ -66,7 +96,7 @@ export function CodeEditor() {
       monacoInstance.focus();
       // monacoInstance.getValue();
       monacoInstance.onDidChangeCursorPosition((e) => {
-        console.log(e);
+        // console.log(e);
       });
     }
   }, [monacoInstance]);
@@ -136,7 +166,7 @@ export function CodeEditor() {
             ))}
           </SelectContent>
         </Select>
-        <Button className="px-9 font-bold " disabled title="Run Code">
+        <Button className="px-9 font-bold " title="Run Code" onClick={runCode}>
           Run
         </Button>
 
