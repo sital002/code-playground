@@ -22,7 +22,7 @@ export async function excuteCode(code: string, language: string) {
     const { stdout, stderr } = await exec("node test.js");
     return { result: stdout, error: stderr };
   } catch (err: any) {
-    // console.log(err.message);
+    console.log(err.message);
     return { error: JSON.stringify(err.message) };
   }
 }

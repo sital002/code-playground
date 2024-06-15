@@ -25,8 +25,9 @@ const defaultCode = `console.log("Hello World! ");`;
 
 type CodeEditorProps = {
   setOutput: (prev: string) => void;
+  outputRef: React.RefObject<HTMLDivElement>;
 };
-export function CodeEditor({ setOutput }: CodeEditorProps) {
+export function CodeEditor({ setOutput, outputRef }: CodeEditorProps) {
   const [monacoInstance, setMonacoInstance] =
     useState<editor.IStandaloneCodeEditor | null>(null);
 
@@ -68,10 +69,16 @@ export function CodeEditor({ setOutput }: CodeEditorProps) {
         return alert("Only javascript is supported for now.");
       const { result, error } = await excuteCode(value, language);
       console.log(result);
-      if (error) {
+      if (error && outputRef.current) {
+        // const textWithBrs = error.replace(/\r?\n/g, "<br />");
+        // outputRef.current.innerHTML = textWithBrs;
+
         setOutput(error);
       }
-      if (result) {
+      if (result && outputRef.current) {
+        // const textWithBrs = result.replace(/\n/g, "<br>");
+
+        // outputRef.current.innerHTML = textWithBrs;
         setOutput(result);
       }
     } catch (err) {
