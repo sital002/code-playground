@@ -4,7 +4,11 @@
 import fs from "fs";
 const util = require("node:util");
 const exec = util.promisify(require("node:child_process").exec);
-export async function excuteCode(code: string, language: string) {
+
+export async function excuteCode(
+  code: string,
+  language: string
+): Promise<{ result?: string; error?: string }> {
   if (language !== "javascript")
     return { error: "Only javascript is supported for now." };
 
