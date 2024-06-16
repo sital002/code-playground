@@ -67,19 +67,22 @@ export function CodeEditor({ setOutput, outputRef }: CodeEditorProps) {
     try {
       if (language !== "javascript")
         return alert("Only javascript is supported for now.");
-      const { result, error } = await excuteCode(value, language);
-      console.log(result);
+      const response = await excuteCode(value, language);
+      let { result, error } = response;
       if (error && outputRef.current) {
-        // const textWithBrs = error.replace(/\r?\n/g, "<br />");
-        // outputRef.current.innerHTML = textWithBrs;
-
-        setOutput(error);
+        const formattedError =
+          error.startsWith(`"`) && error.endsWith(`"`)
+            ? error.slice(1, -1)
+            : error;
+        const formattedOutput = formattedError.replace(/\r\n/g, "<br />");
+        // const formattedOutput = "This is text";
+        console.log(formattedOutput === formattedError);
+        outputRef.current.innerHTML = formattedOutput;
+        // setOutput(error);
       }
       if (result && outputRef.current) {
-        // const textWithBrs = result.replace(/\n/g, "<br>");
-
-        // outputRef.current.innerHTML = textWithBrs;
-        setOutput(result);
+        // setOutput(result);
+        outputRef.current.innerHTML = result;
       }
     } catch (err) {
       setOutput(JSON.stringify(err));
