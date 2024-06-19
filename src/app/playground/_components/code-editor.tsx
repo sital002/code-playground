@@ -70,15 +70,8 @@ export function CodeEditor({ setOutput, outputRef }: CodeEditorProps) {
       const response = await excuteCode(value, language);
       let { result, error } = response;
       if (error && outputRef.current) {
-        const formattedError =
-          error.startsWith(`"`) && error.endsWith(`"`)
-            ? error.slice(1, -1)
-            : error;
-        const formattedOutput = formattedError.replace(/\r\n/g, "<br />");
-        // const formattedOutput = "This is text";
-        console.log(formattedOutput === formattedError);
-        outputRef.current.innerHTML = formattedOutput;
         // setOutput(error);
+        outputRef.current.innerHTML = error;
       }
       if (result && outputRef.current) {
         // setOutput(result);

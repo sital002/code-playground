@@ -26,7 +26,8 @@ export async function excuteCode(
     const { stdout, stderr } = await exec("node test.js");
     return { result: stdout, error: stderr };
   } catch (err: any) {
-    console.log(err.message);
-    return { error: JSON.stringify(err.message) };
+    // console.log(err.message);
+    const formattedError = err.message.replace(/\r\n/g, "<br />");
+    return { error: formattedError };
   }
 }
