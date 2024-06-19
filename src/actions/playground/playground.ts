@@ -1,33 +1,50 @@
 "use server";
 
-// import { exec } from "child_process";
-import fs from "fs";
-const util = require("node:util");
-const exec = util.promisify(require("node:child_process").exec);
+import axios from "axios";
+const qs = require("qs");
 
+const supportedLanguages = {
+  javascript: "js",
+  python: "py",
+  java: "java",
+  c: "c",
+  goLang: "go",
+  cpp: "cpp",
+  csharp: "csharp",
+};
 export async function excuteCode(
   code: string,
-  language: string
+  language: string,
+  input?: string
 ): Promise<{ result?: string; error?: string }> {
   if (language !== "javascript")
     return { error: "Only javascript is supported for now." };
 
-  // console.log("The code is ", code);
-
-  fs.writeFile("./test.js", code, (err) => {
-    if (err) {
-      console.error(err);
-      return { error: "Error while writing file" };
-    } else {
-      console.log("File written succesfully");
-    }
+  var data = qs.stringify({
+    code: code,
+    language: supportedLanguages[language],
+    input: input,
   });
+  const config = {
+    method: "post",
+    url: "https://api.codex.jaagrav.in",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    data: data,
+  };
+
   try {
-    const { stdout, stderr } = await exec("node test.js");
-    return { result: stdout, error: stderr };
-  } catch (err: any) {
-    // console.log(err.message);
-    const formattedError = err.message.replace(/\r\n/g, "<br />");
-    return { error: formattedError };
+    const response = await axios(config);
+    // console.log(response.data);
+    const { error, output } = response.data;
+    if (error) {
+      const formattedError = error.replace(/\n/g, "<br />");
+      return { error: formattedError };
+    }
+    return { result: output };
+  } catch (err) {
+    console.log(err);
+    return { error: "Error while executing code" };
   }
 }
