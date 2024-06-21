@@ -17,7 +17,7 @@ type OutputProps = {
   output: string;
   outputRef: React.RefObject<HTMLDivElement>;
 };
-function Output({ output, outputRef }: OutputProps) {
+function Output({ outputRef }: OutputProps) {
   return (
     <div className="my-3 w-[40%] border border-primary rounded-lg p-3">
       <p className="py-3 font-bold">Output</p>

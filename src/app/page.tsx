@@ -6,6 +6,7 @@ export default function Home() {
     <div className="grid grid-cols-2 md:grid-cols-5 gap-6 p-3">
       {languages.map((language) => [
         <LanguageCard
+          value={language.value}
           name={language.name}
           logo={language.logo}
           key={language.name}

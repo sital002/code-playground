@@ -8,7 +8,7 @@ const supportedLanguages = {
   python: "py",
   java: "java",
   c: "c",
-  goLang: "go",
+  go: "go",
   cpp: "cpp",
   csharp: "csharp",
 };
@@ -17,12 +17,12 @@ export async function excuteCode(
   language: string,
   input?: string
 ): Promise<{ result?: string; error?: string }> {
-  if (language !== "javascript")
-    return { error: "Only javascript is supported for now." };
+  if (!supportedLanguages[language as keyof typeof supportedLanguages])
+    return { error: "Language not supported" };
 
   var data = qs.stringify({
     code: code,
-    language: supportedLanguages[language],
+    language: supportedLanguages[language as keyof typeof supportedLanguages],
     input: input,
   });
   const config = {

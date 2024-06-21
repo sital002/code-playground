@@ -38,7 +38,10 @@ export function CodeEditor({ setOutput, outputRef }: CodeEditorProps) {
   // const editorRef = useRef<monacoType.editor.IStandaloneCodeEditor>();
   const params = useParams();
   // const monacoRef = useRef<typeof import("monaco-editor")>();
-  const [language, setLanguage] = useState(params.id as string);
+  const [language, setLanguage] = useState(
+    () =>
+      languages.find((lang) => lang.value === params.id)?.value ?? "Javascript"
+  );
 
   const handleEditorChange = (value: string | undefined) => {
     setValue(value || "");
@@ -65,8 +68,8 @@ export function CodeEditor({ setOutput, outputRef }: CodeEditorProps) {
 
   async function runCode() {
     try {
-      if (language !== "javascript")
-        return alert("Only javascript is supported for now.");
+      // if (language !== "javascript")
+      // return alert("Only javascript is supported for now.");
       const response = await excuteCode(value, language);
       let { result, error } = response;
       if (error && outputRef.current) {
@@ -138,9 +141,12 @@ export function CodeEditor({ setOutput, outputRef }: CodeEditorProps) {
   return (
     <div className="w-[60%]">
       <div className="flex gap-3 my-3">
-        <Select onValueChange={(e) => setLanguage(e.toLowerCase())}>
+        <Select
+          onValueChange={(e) => setLanguage(e.toLowerCase())}
+          defaultValue={language.charAt(0).toUpperCase() + language.slice(1)}
+        >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={language} />
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {languages.map((language) => (
@@ -152,7 +158,7 @@ export function CodeEditor({ setOutput, outputRef }: CodeEditorProps) {
         </Select>
         <Select defaultValue={editorTheme} onValueChange={handleThemeChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue defaultValue={"test"} />
+            <SelectValue placeholder="Select Theme" />
           </SelectTrigger>
           <SelectContent>
             {monacoThemes.map((theme) => (
